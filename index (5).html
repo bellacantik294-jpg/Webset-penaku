@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tintaku — Dark Glowing</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style_dark.css">
+</head>
+<body class="dark-theme">
+<header class="site">
+  <div class="brand">
+    <div class="logo">Ti</div>
+    <h1>Tintaku</h1>
+  </div>
+  <nav class="nav">
+    <a href="index.html">Beranda</a>
+    <a href="cerpen-otomatis.html">Cerpen</a>
+    <a href="kategori.html">Kategori</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌗</button>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h2>Selamat datang di Tintaku</h2>
+    <p>Tempat berkumpulnya cerpen dan puisi — temukan cerita yang menyentuh.</p>
+  </section>
+
+  <section id="cards" class="cards" aria-live="polite"></section>
+</main>
+
+<footer class="footer">
+  <div>© <span id="year"></span> Tintaku — dibuat dengan <span class="heart">❤</span></div>
+</footer>
+
+<!-- module script kept as original to load cerpen from firebase -->
+<script type="module">
+import { getAllCerpenRandom } from './firebase-user.js';
+const el = document.getElementById('cards');
+
+function cardTemplate(c){
+  const img = c.coverUrl||c.gambar||'images/35157.jpg';
+  const title = c.title||c.judul||'Tanpa judul';
+  const category = c.category||c.kategori||'Umum';
+  const excerpt = (c.content||c.isi||'').substring(0,160).replace(/\n/g,' ') + '...';
+  return `<article class="card">
+    <div class="card-media"><img src="${img}" alt="${title} cover"></div>
+    <div class="card-body">
+      <div class="card-meta">${category}</div>
+      <h3 class="card-title">${title}</h3>
+      <p class="card-excerpt">${excerpt}</p>
+      <div class="card-actions"><a class="btn" href="detail-cerpen.html?id=${c.id}">Baca</a></div>
+    </div>
+  </article>`;
+}
+
+async function load(){
+  el.innerHTML = '<div class="loading">Memuat...</div>';
+  try{
+    const list = await getAllCerpenRandom();
+    if(!list || !list.length){
+      el.innerHTML = '<p class="small">Belum ada cerpen.</p>';
+      return;
+    }
+    el.innerHTML = list.map(c => cardTemplate(c)).join('');
+  }catch(e){
+    console.error(e);
+    el.innerHTML = '<p class="small">Gagal memuat cerpen. Pastikan koneksi dan firebase-user.js tersedia.</p>';
+  }
+}
+load();
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// theme toggle (keeps preference in localStorage)
+const btn = document.getElementById('themeToggle');
+btn.addEventListener('click', ()=>{
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('tintaku_theme', isDark ? 'dark' : 'light');
+});
+const saved = localStorage.getItem('tintaku_theme');
+if(saved==='light') document.body.classList.remove('dark-theme');
+</script>
+</body>
+</html>
