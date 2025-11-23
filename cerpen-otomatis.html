@@ -1,0 +1,11 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Cerpen</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="site"><div class="brand"><div class="logo">Ti</div><h1>Tintaku</h1></div><nav class="nav"><a href="index.html">Beranda</a><a href="cerpen-otomatis.html">Cerpen</a><a href="kategori.html">Kategori</a><a href="admin.html">Admin</a></nav></header>
+<main class="container"><h2>Cerpen Terbaru</h2><div id="list" class="listgrid"></div></main><footer class="footer"><div>© <span id="year2"></span> Tintaku</div></footer>
+<script type="module">
+import { getAllCerpenRandom } from './firebase-user.js';
+const el = document.getElementById('list');
+async function load(){ const list = await getAllCerpenRandom(); if(!list.length){ el.innerHTML='<p class=small>Belum ada cerpen.</p>'; return;} el.innerHTML=''; list.forEach(c=>{ el.innerHTML += `<article class="card"><img class="cover" src="${c.coverUrl||c.gambar||'images/35157.jpg'}"><h3>${c.title||c.judul}</h3><p class='small'>${c.category||c.kategori}</p><p>${(c.content||c.isi||'').substring(0,120)}...</p><div style='margin-top:10px'><a class='btn' href='detail-cerpen.html?id=${c.id}'>Baca</a></div></article>` }); }
+load();
+document.getElementById('year2').textContent = new Date().getFullYear();
+</script>
+</body></html>

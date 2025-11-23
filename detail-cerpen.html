@@ -1,0 +1,12 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Detail Cerpen</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="site"><div class="brand"><div class="logo">Ti</div><h1>Tintaku</h1></div><nav class="nav"><a href="index.html">Beranda</a><a href="cerpen-otomatis.html">Cerpen</a><a href="kategori.html">Kategori</a><a href="admin.html">Admin</a></nav></header>
+<main class="container"><article class="post"><img id="cover" class="cover" src=""><h2 id="title"></h2><div class="meta"><span id="cat"></span> • <span id="date"></span></div><div id="content" class="content"></div><a href="cerpen-otomatis.html" class="btn">← Kembali</a></article></main>
+<footer class="footer"><div>© <span id="year3"></span> Tintaku</div></footer>
+<script type="module">
+import { getAllCerpenRandom } from './firebase-user.js';
+const params = new URLSearchParams(location.search); const id = params.get('id');
+async function load(){ if(!id) return; const col = await getAllCerpenRandom(); const item = col.find(x=>x.id===id); if(!item){ document.getElementById('title').innerText='Cerpen tidak ditemukan'; return;} document.getElementById('title').innerText = item.title||item.judul; document.getElementById('cat').innerText = item.category||item.kategori; document.getElementById('date').innerText = item.date||''; document.getElementById('content').innerHTML = (item.content||item.isi||'').replace(/\n/g,'<br>'); document.getElementById('cover').src = item.coverUrl||item.gambar||'images/35157.jpg'; }
+load();
+document.getElementById('year3').textContent = new Date().getFullYear();
+</script>
+</body></html>
